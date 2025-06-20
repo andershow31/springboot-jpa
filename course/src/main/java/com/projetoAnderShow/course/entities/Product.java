@@ -9,8 +9,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 
 @Entity
@@ -28,7 +30,12 @@ public class Product implements Serializable{
 	private Double price;
 	private String imgUrl;
 	
-	@Transient //o @Transeiente é como se dissesse que a linha abaixo é transitória, e não é interpretada pelo programa
+	//@Transient //o @Transeiente é como se dissesse que a linha abaixo é transitória, e não é interpretada pelo programa
+	
+	@ManyToMany //anotação para indicar ao jpa que é uma associação muitos pra muitos
+	@JoinTable(name = "tb_product_category", 
+	joinColumns = @JoinColumn(name = "product_id"),//essa anotação da join nas tabelas, e o joinColumn indica a chave estrangeira
+	inverseJoinColumns = @JoinColumn(name = "category_id"))//o inversejoincolumns é a chave estrangeira da outra categoria, nesse caso a categoria
 	private Set<Category> categories = new HashSet<>();
 	//dentro do produto temos uma série de categorias
 	//uso do set pois não repete os itens

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -39,6 +42,9 @@ public class Product implements Serializable{
 	private Set<Category> categories = new HashSet<>();
 	//dentro do produto temos uma série de categorias
 	//uso do set pois não repete os itens
+	
+	@OneToMany(mappedBy="id.product") //indica que esta sendo mapeado pelo product do order instanciado dentro do orderitempk
+	private Set<OrderItem> items = new HashSet<>(); //usaremos essa coleção para mapear as orders associadas a cada produto
 	
 	public Product() {
 		
@@ -95,6 +101,15 @@ public class Product implements Serializable{
 
 	public Set<Category> getCategories() {
 		return categories;
+	}
+	
+	@JsonIgnore
+	public Set<Order> getOrders(){
+		Set<Order> set = new HashSet<>();
+		for (OrderItem x: items) {
+			set.add(x.getOrder());
+		}
+		return set;
 	}
 
 	@Override

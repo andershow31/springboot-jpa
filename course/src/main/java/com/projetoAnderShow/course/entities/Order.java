@@ -9,6 +9,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.projetoAnderShow.course.entities.enums.OrderStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
@@ -27,6 +29,7 @@ public class Order implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	//a anotação abaixo é para definir o formato da data do instant
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
 	private Instant moment;
@@ -39,6 +42,9 @@ public class Order implements Serializable{
 	private Set<OrderItem> items = new HashSet<>();
 	
 	private Integer orderStatus;
+	
+	@OneToOne(mappedBy="order", cascade = CascadeType.ALL)// var que chama o order na class payment
+	private Payment payment; // já o cascade serve para indicar que as duas classes usarão o mesmo id
 	
 	public Order() {
 		
@@ -92,7 +98,17 @@ public class Order implements Serializable{
 		return items;
 	}
 	
+	public Payment getPayment() {
+		return payment;
+	}
 
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+
+
+	
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

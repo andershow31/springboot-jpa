@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.projetoAnderShow.course.entities.User;
 import com.projetoAnderShow.course.repositories.UserRepository;
+import com.projetoAnderShow.course.servicies.exceptions.DatabaseException;
 import com.projetoAnderShow.course.servicies.exceptions.ResourceNotFoundException;
 
 @Service
@@ -25,7 +28,13 @@ public class UserService {
 		return repository.save(obj);
 	}
 	public void delete(Long id) {
+		try {
 		repository.deleteById(id);
+		}catch (EmptyResultDataAccessException e) { //captura a exceção de não ter o id na hora de deletar 
+			 throw new ResourceNotFoundException(id);
+		}catch (DataIntegrityViolationException e) {
+			throw new DatabaseException(e.getMessage());
+		}
 	}
 	public User update(Long id, User obj) {
 		User entity = repository.getReferenceById(id);// prepara o obj monitorado para depois mandar para o banco
